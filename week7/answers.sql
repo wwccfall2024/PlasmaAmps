@@ -193,31 +193,37 @@ CREATE PROCEDURE set_winners(IN team_id INT)
 BEGIN
     DECLARE done INT DEFAULT 0;
     DECLARE character_id INT;
-    DECLARE cursor CURSOR FOR
+    DECLARE cursor_winners CURSOR FOR
         SELECT tm.character_id
         FROM team_members tm
         JOIN character_stats cs ON tm.character_id = cs.character_id
         WHERE tm.team_id = team_id AND cs.health > 0;
 
-    -- Open the cursor for the team
-    OPEN cursor;
+ -- Declare a handler to handle the end of the cursor
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
 
     -- Empty the winners table
     DELETE FROM winners;
 
-    -- Add the winning team members to the winners table
+    -- Open the cursor
+    OPEN cursor_winners;
+
+    -- Loop through each result
     read_loop: LOOP
-        FETCH cursor INTO character_id;
+        FETCH cursor_winners INTO character_id;
         IF done THEN
             LEAVE read_loop;
         END IF;
 
-        INSERT INTO winners (team_id, character_id)
-        VALUES (team_id, character_id);
+        -- Insert each winner into the winners table
+        INSERT INTO winners (character_id, name)
+        SELECT character_id, name
+        FROM characters
+        WHERE character_id = character_id;
     END LOOP;
 
     -- Close the cursor
-    CLOSE cursor;
+    CLOSE cursor_winners;
 END $$
 
 DELIMITER ;
