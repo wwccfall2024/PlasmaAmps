@@ -255,7 +255,7 @@ BEGIN
         INSERT INTO winners (character_id, name)
         SELECT DISTINCT c.character_id, c.name
         FROM characters c
-        WHERE c.character_id = character_id;
+        WHERE c.character_id = character_id
         ON DUPLICATE KEY UPDATE name = VALUES(name);
     END LOOP;
 
