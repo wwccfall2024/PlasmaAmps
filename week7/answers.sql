@@ -100,7 +100,8 @@ JOIN (
     SELECT character_id, item_id
     FROM equipped
 ) all_items ON c.character_id = all_items.character_id
-JOIN items i ON all_items.item_id = i.item_id;
+JOIN items i ON all_items.item_id = i.item_id
+  ORDER BY c.character_id, i.name;
 
 
 CREATE VIEW team_items AS
