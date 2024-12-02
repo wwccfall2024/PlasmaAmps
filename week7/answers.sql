@@ -197,13 +197,20 @@ BEGIN
     FROM inventory
     WHERE inventory_id = inventory_id;
 
-    -- Add the item to the equipped table
-    INSERT INTO equipped (character_id, item_id)
-    VALUES (character_id, item_id);
+     -- Check if the item is already equipped (if you allow only one item per type)
+    IF NOT EXISTS (
+        SELECT 1
+        FROM equipped
+        WHERE character_id = character_id AND item_id = item_id
+    ) THEN
+        -- Add the item to the equipped table
+        INSERT INTO equipped (character_id, item_id)
+        VALUES (character_id, item_id);
 
-    -- Remove the item from the inventory table
-    DELETE FROM inventory
-    WHERE inventory_id = inventory_id;
+        -- Remove the item from the inventory table
+        DELETE FROM inventory
+        WHERE inventory_id = inventory_id;
+    END IF;
 END $$
 
 CREATE PROCEDURE unequip(IN equipped_id INT)
@@ -216,13 +223,20 @@ BEGIN
     FROM equipped
     WHERE equipped_id = equipped_id;
 
-    -- Remove the item from the equipped table
-    DELETE FROM equipped
-    WHERE equipped_id = equipped_id;
+    -- Check if the item is already in the inventory (if you allow only one equipped item at a time)
+    IF NOT EXISTS (
+        SELECT 1
+        FROM inventory
+        WHERE character_id = character_id AND item_id = item_id
+    ) THEN
+        -- Remove the item from the equipped table
+        DELETE FROM equipped
+        WHERE equipped_id = equipped_id;
 
-    -- Add the item back to the inventory table
-    INSERT INTO inventory (character_id, item_id)
-    VALUES (character_id, item_id);
+        -- Add the item back to the inventory table
+        INSERT INTO inventory (character_id, item_id)
+        VALUES (character_id, item_id);
+    END IF;
 END $$
 
 CREATE PROCEDURE set_winners(IN team_id INT)
