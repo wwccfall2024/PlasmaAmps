@@ -187,22 +187,24 @@ BEGIN
     END IF;
 END $$
 
-CREATE PROCEDURE equip(IN inventory_id INT)
+CREATE PROCEDURE equip(in _inventory_id INT)
 BEGIN
-    DECLARE character_id INT;
-    DECLARE item_id INT;
+    -- Declare variables to store character_id and item_id
+    DECLARE _character_id INT;
+    DECLARE _item_id INT;
 
-    -- Get character_id and item_id associated with the inventory_id
-    SELECT character_id, item_id INTO character_id, item_id
+    -- Get the character_id and item_id from the inventory table
+    SELECT character_id, item_id
+    INTO _character_id, _item_id
     FROM inventory
-    WHERE inventory_id = inventory_id;
+    WHERE inventory_id = _inventory_id;
+
+    -- Remove the item from the inventory table
+    DELETE FROM inventory WHERE inventory_id = _inventory_id;
 
     -- Add the item to the equipped table
     INSERT INTO equipped (character_id, item_id)
-    VALUES (character_id, item_id);
-
-    -- Remove the item from inventory
-    DELETE FROM inventory WHERE inventory_id = inventory_id;
+    VALUES (_character_id, _item_id);
 END $$
 
 CREATE PROCEDURE unequip(in _equipped_id INT)
@@ -215,12 +217,13 @@ BEGIN
     SELECT character_id, item_id
     INTO _character_id, _item_id
     FROM equipped
-    WHERE equipped_id = _equipped_id;
+    WHERE equipped_id = _equipped_id
+    LIMIT 1;
 
     -- Remove the item from the equipped table
     DELETE FROM equipped WHERE equipped_id = _equipped_id;
 
-    -- Insert the item back into the inventory table
+    -- Add the item back to the inventory table
     INSERT INTO inventory (character_id, item_id)
     VALUES (_character_id, _item_id);
 END $$
