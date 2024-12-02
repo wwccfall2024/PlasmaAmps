@@ -11,7 +11,7 @@ CREATE TABLE players (
 
 CREATE TABLE characters (
   character_id INT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
-  player_id INT UNSIGNED,
+  player_id INT UNSIGNED NULL,
   name VARCHAR(30) NOT NULL,
   level INT UNSIGNED NOT NULL,
   FOREIGN KEY (player_id) REFERENCES players(player_id) 
@@ -20,19 +20,19 @@ CREATE TABLE characters (
 );
 
 CREATE TABLE winners (
-  character_id INT UNSIGNED PRIMARY KEY NOT NULL,
+  character_id INT UNSIGNED PRIMARY KEY,
   name VARCHAR(30) NOT NULL,
   FOREIGN KEY (character_id) REFERENCES characters(character_id)
-    ON DELETE SET NULL 
+    ON DELETE CASCADE 
     ON UPDATE CASCADE
 );
 
 CREATE TABLE character_stats (
-  character_id INT UNSIGNED PRIMARY KEY NOT NULL,
+  character_id INT UNSIGNED PRIMARY KEY,
   health INT UNSIGNED NOT NULL,
   armor INT UNSIGNED NOT NULL,
   FOREIGN KEY (character_id) REFERENCES characters(character_id)
-    ON DELETE SET NULL 
+    ON DELETE CASCADE
     ON UPDATE CASCADE
 );
 
@@ -49,7 +49,7 @@ CREATE TABLE team_members (
     ON DELETE SET NULL 
     ON UPDATE CASCADE,
   FOREIGN KEY (character_id) REFERENCES characters(character_id)
-    ON DELETE SET NULL 
+    ON DELETE CASCADE 
     ON UPDATE CASCADE
 );
 
@@ -62,13 +62,13 @@ CREATE TABLE items (
 
 CREATE TABLE inventory (
   inventory_id INT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
-  character_id INT UNSIGNED NOT NULL,
-  item_id INT UNSIGNED NOT NULL,
+  character_id INT UNSIGNED NULL,
+  item_id INT UNSIGNED NULL,
   FOREIGN KEY (character_id) REFERENCES characters(character_id)
-    ON DELETE SET NULL 
+    ON DELETE CASCADE
     ON UPDATE CASCADE,
   FOREIGN KEY (item_id) REFERENCES items(item_id)
-    ON DELETE SET NULL 
+    ON DELETE CASCADE
     ON UPDATE CASCADE
 );
 
@@ -77,10 +77,10 @@ CREATE TABLE equipped (
   character_id INT UNSIGNED NOT NULL,
   item_id INT UNSIGNED NOT NULL,
   FOREIGN KEY (character_id) REFERENCES characters(character_id)
-    ON DELETE SET NULL 
+    ON DELETE CASCADE
     ON UPDATE CASCADE,
   FOREIGN KEY (item_id) REFERENCES items(item_id)
-    ON DELETE SET NULL 
+    ON DELETE CASCADE
     ON UPDATE CASCADE
 );
 
