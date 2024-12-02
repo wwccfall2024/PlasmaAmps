@@ -105,19 +105,20 @@ CREATE VIEW team_items AS
 SELECT DISTINCT
     t.team_id,
     t.name AS team_name,
-    COALESCE(i.name, 'No Item') AS item_name,  -- Default value for NULL
+    i.name AS item_name,
     i.armor,
     i.damage
 FROM
     teams t
-JOIN
+INNER JOIN
     team_members tm ON t.team_id = tm.team_id
-LEFT JOIN
+INNER JOIN
     inventory inv ON tm.character_id = inv.character_id
-LEFT JOIN
+INNER JOIN
     equipped eq ON tm.character_id = eq.character_id
-LEFT JOIN
+INNER JOIN
     items i ON i.item_id = COALESCE(inv.item_id, eq.item_id);
+
 
 
 
