@@ -203,9 +203,6 @@ BEGIN
         -- Add the item to the equipped table
         INSERT INTO equipped (character_id, item_id)
         VALUES (character_id, item_id);
-    ELSE
-        -- If the item is already equipped, skip the insertion (silently do nothing)
-        -- No action taken if the item is already equipped
     END IF;
 END $$
 
