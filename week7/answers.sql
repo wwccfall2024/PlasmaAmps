@@ -84,6 +84,37 @@ CREATE TABLE equipped (
     ON UPDATE CASCADE
 );
 
+CREATE VIEW character_items AS
+SELECT DISTINCT
+    c.character_id,
+    c.name AS character_name,
+    i.name AS item_name,
+    i.armor,
+    i.damage
+FROM
+    characters c
+JOIN
+    character_inventory ci ON c.character_id = ci.character_id
+JOIN
+    items i ON ci.item_id = i.item_id;
+
+CREATE VIEW team_items AS
+SELECT DISTINCT
+    t.team_id,
+    t.name AS team_name,
+    i.name AS item_name,
+    i.armor,
+    i.damage
+FROM
+    teams t
+JOIN
+    team_members tm ON t.team_id = tm.team_id
+JOIN
+    character_inventory ci ON tm.character_id = ci.character_id
+JOIN
+    items i ON ci.item_id = i.item_id;
+
+
 DELIMITER $$
 
 CREATE FUNCTION armor_total(character_id INT) 
@@ -217,9 +248,10 @@ BEGIN
 
         -- Insert each winner into the winners table
         INSERT INTO winners (character_id, name)
-        SELECT character_id, name
-        FROM characters
-        WHERE character_id = character_id;
+        SELECT DISTINCT c.character_id, c.name
+        FROM characters c
+        WHERE c.character_id = character_id;
+        ON DUPLICATE KEY UPDATE name = VALUES(name);
     END LOOP;
 
     -- Close the cursor
