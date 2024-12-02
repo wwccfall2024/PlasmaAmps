@@ -88,6 +88,7 @@ DELIMITER $$
 
 CREATE FUNCTION armor_total(character_id INT) 
 RETURNS INT
+READS SQL DATA
 BEGIN
     DECLARE total_armor INT DEFAULT 0;
 
