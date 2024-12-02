@@ -84,6 +84,8 @@ CREATE TABLE equipped (
     ON UPDATE CASCADE
 );
 
+DELIMITER $$
+
 CREATE FUNCTION armor_total(character_id INT) 
 RETURNS INT
 BEGIN
@@ -101,7 +103,7 @@ BEGIN
     WHERE e.character_id = character_id;
 
     RETURN total_armor;
-END;
+END $$
 
 CREATE PROCEDURE attack(
     IN id_of_character_being_attacked INT,
@@ -146,7 +148,7 @@ BEGIN
             DELETE FROM team_members WHERE character_id = id_of_character_being_attacked;
         END IF;
     END IF;
-END;
+END $$
 
 CREATE PROCEDURE equip(IN inventory_id INT)
 BEGIN
@@ -165,7 +167,7 @@ BEGIN
     -- Remove the item from the inventory table
     DELETE FROM inventory
     WHERE inventory_id = inventory_id;
-END;
+END $$
 
 CREATE PROCEDURE unequip(IN equipped_id INT)
 BEGIN
@@ -184,7 +186,7 @@ BEGIN
     -- Add the item back to the inventory table
     INSERT INTO inventory (character_id, item_id)
     VALUES (character_id, item_id);
-END;
+END $$
 
 CREATE PROCEDURE set_winners(IN team_id INT)
 BEGIN
@@ -215,5 +217,6 @@ BEGIN
 
     -- Close the cursor
     CLOSE cursor;
-END;
+END $$
 
+DELIMITER ;
