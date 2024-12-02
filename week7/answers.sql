@@ -187,40 +187,42 @@ BEGIN
     END IF;
 END $$
 
-CREATE PROCEDURE equip(IN inventory_id INT)
+CREATE PROCEDURE equip(IN character_id INT, IN item_id INT)
 BEGIN
-    DECLARE character_id INT;
-    DECLARE item_id INT;
-
-    -- Get the character_id and item_id from the inventory
-    SELECT character_id, item_id INTO character_id, item_id
-    FROM inventory
-    WHERE inventory_id = inventory_id;
-
-     -- Check if the item is already equipped (if you allow only one item per type)
-     -- Check if the item is already equipped for the character
-    IF NOT EXISTS (SELECT 1 FROM equipped WHERE character_id = character_id AND item_id = item_id) THEN
-        -- Add the item to the equipped table
+    -- Check if the item exists in the inventory for the given character
+    IF EXISTS (SELECT 1 FROM inventory WHERE character_id = character_id AND item_id = item_id) THEN
+        
+        -- Insert the item into the equipped table
         INSERT INTO equipped (character_id, item_id)
         VALUES (character_id, item_id);
+        
+        -- Remove the item from the inventory table
+        DELETE FROM inventory WHERE character_id = character_id AND item_id = item_id;
+
+    ELSE
+        -- If the item does not exist in the inventory, signal an error (optional)
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Item not found in inventory';
     END IF;
 END $$
 
-CREATE PROCEDURE unequip(IN equipped_id INT)
+CREATE PROCEDURE unequip(IN character_id INT, IN item_id INT)
 BEGIN
-    DECLARE character_id INT;
-    DECLARE item_id INT;
+    -- Check if the item exists in the equipped table for the given character
+    IF EXISTS (SELECT 1 FROM equipped WHERE character_id = character_id AND item_id = item_id) THEN
+        
+        -- Insert the item back into the inventory table
+        INSERT INTO inventory (character_id, item_id)
+        VALUES (character_id, item_id);
+        
+        -- Remove the item from the equipped table
+        DELETE FROM equipped WHERE character_id = character_id AND item_id = item_id;
 
-    -- Get the character_id and item_id from the equipped table
-    SELECT character_id, item_id INTO character_id, item_id
-    FROM equipped
-    WHERE equipped_id = equipped_id;
-
-    -- Remove the item from the equipped table
-    DELETE FROM equipped
-    WHERE equipped_id = equipped_id;
+    ELSE
+        -- If the item is not equipped, signal an error (optional)
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Item not equipped';
+    END IF;
 END $$
-
+  
 CREATE PROCEDURE set_winners(IN team_id INT)
 BEGIN
     DECLARE done INT DEFAULT 0;
