@@ -105,7 +105,7 @@ CREATE VIEW team_items AS
 SELECT DISTINCT
     t.team_id,
     t.name AS team_name,
-    i.name AS item_name,
+    COALESCE(i.name, 'No Item') AS item_name,  -- Default value for NULL
     i.armor,
     i.damage
 FROM
@@ -118,6 +118,7 @@ LEFT JOIN
     equipped eq ON tm.character_id = eq.character_id
 LEFT JOIN
     items i ON i.item_id = COALESCE(inv.item_id, eq.item_id);
+
 
 
 DELIMITER $$
