@@ -93,12 +93,14 @@ SELECT DISTINCT
     i.damage
 FROM
     characters c
-LEFT JOIN
-    inventory inv ON c.character_id = inv.character_id
-LEFT JOIN
-    equipped eq ON c.character_id = eq.character_id
-LEFT JOIN
-    items i ON i.item_id = COALESCE(inv.item_id, eq.item_id);
+JOIN (
+    SELECT character_id, item_id
+    FROM inventory
+    UNION ALL
+    SELECT character_id, item_id
+    FROM equipped
+) all_items ON c.character_id = all_items.character_id
+JOIN items i ON all_items.item_id = i.item_id;
 
 
 CREATE VIEW team_items AS
