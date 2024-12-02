@@ -129,7 +129,7 @@ BEGIN
     DECLARE total_armor INT DEFAULT 0;
 
     -- Sum the armor from the character's stats (if applicable)
-    SELECT stats_armor INTO total_armor
+    SELECT armor INTO total_armor
     FROM character_stats
     WHERE character_id = character_id;
 
