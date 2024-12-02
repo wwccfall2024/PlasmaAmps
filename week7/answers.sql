@@ -93,10 +93,13 @@ SELECT DISTINCT
     i.damage
 FROM
     characters c
-JOIN
-    character_inventory ci ON c.character_id = ci.character_id
-JOIN
-    items i ON ci.item_id = i.item_id;
+LEFT JOIN
+    inventory inv ON c.character_id = inv.character_id
+LEFT JOIN
+    equipped eq ON c.character_id = eq.character_id
+LEFT JOIN
+    items i ON i.item_id = COALESCE(inv.item_id, eq.item_id);
+
 
 CREATE VIEW team_items AS
 SELECT DISTINCT
@@ -109,10 +112,12 @@ FROM
     teams t
 JOIN
     team_members tm ON t.team_id = tm.team_id
-JOIN
-    character_inventory ci ON tm.character_id = ci.character_id
-JOIN
-    items i ON ci.item_id = i.item_id;
+LEFT JOIN
+    inventory inv ON tm.character_id = inv.character_id
+LEFT JOIN
+    equipped eq ON tm.character_id = eq.character_id
+LEFT JOIN
+    items i ON i.item_id = COALESCE(inv.item_id, eq.item_id);
 
 
 DELIMITER $$
