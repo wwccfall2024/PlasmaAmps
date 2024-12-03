@@ -132,23 +132,23 @@ RETURNS INT
 READS SQL DATA
 BEGIN
     -- Variables to store intermediate results
-    DECLARE stats_armor INT DEFAULT 0;
+    DECLARE armor INT DEFAULT 0;
     DECLARE equipped_armor INT DEFAULT 0;
     DECLARE total_armor INT DEFAULT 0;
 
     -- Get the base armor from character stats (if available)
-    SELECT COALESCE(armor, 0) INTO stats_armor
+    SELECT COALESCE(armor, 0) INTO armor
     FROM character_stats
-    WHERE character_id = armor_total.character_id;
+    WHERE character_id = character_id;
 
     -- Sum the armor values of equipped items (if any)
     SELECT COALESCE(SUM(i.armor), 0) INTO equipped_armor
     FROM equipped e
     JOIN items i ON e.item_id = i.item_id
-    WHERE e.character_id = armor_total.character_id;
+    WHERE e.character_id = character_id;
 
     -- Add base stats and equipped armor
-    SET total_armor = stats_armor + equipped_armor;
+    SET total_armor = armor + equipped_armor;
 
     RETURN total_armor;
 END $$
