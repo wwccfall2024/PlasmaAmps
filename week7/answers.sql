@@ -56,8 +56,8 @@ CREATE TABLE team_members (
 CREATE TABLE items (
   item_id INT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
   name VARCHAR(30) NOT NULL,
-  armor INT UNSIGNED NOT NULL,
-  damage INT UNSIGNED NOT NULL
+  armor INT NOT NULL,
+  damage INT NOT NULL
 );
 
 CREATE TABLE inventory (
@@ -93,14 +93,14 @@ SELECT DISTINCT
     i.damage
 FROM
     characters c
-JOIN (
+INNER JOIN (
     SELECT character_id, item_id
     FROM inventory
     UNION ALL
     SELECT character_id, item_id
     FROM equipped
 ) all_items ON c.character_id = all_items.character_id
-JOIN items i ON all_items.item_id = i.item_id
+INNER JOIN items i ON all_items.item_id = i.item_id
   ORDER BY c.character_id, i.name;
 
 
@@ -132,12 +132,12 @@ RETURNS INT
 READS SQL DATA
 BEGIN
     -- Variables to store intermediate results
-    DECLARE armor INT UNSIGNED;
-    DECLARE equipped_armor INT UNSIGNED;
+    DECLARE char_armor INT;
+    DECLARE equipped_armor INT;
     DECLARE total_armor INT UNSIGNED;
 
     -- Get the base armor from character stats (if available)
-    SELECT armor INTO armor
+    SELECT armor INTO char_armor
     FROM character_stats
     WHERE character_id = char_id;
 
@@ -148,7 +148,7 @@ BEGIN
     WHERE e.character_id = char_id;
 
     -- Add base stats and equipped armor
-    SET total_armor = armor + equipped_armor;
+    SET total_armor = char_armor + equipped_armor;
 
     RETURN total_armor;
 END $$
