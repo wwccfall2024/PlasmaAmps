@@ -127,14 +127,14 @@ INNER JOIN
 
 DELIMITER $$
 
-CREATE FUNCTION armor_total(char_id INT) 
+CREATE FUNCTION armor_total(char_id INT UNSIGNED) 
 RETURNS INT
 READS SQL DATA
 BEGIN
     -- Variables to store intermediate results
-    DECLARE armor INT;
-    DECLARE equipped_armor INT;
-    DECLARE total_armor INT;
+    DECLARE armor INT UNSIGNED;
+    DECLARE equipped_armor INT UNSIGNED;
+    DECLARE total_armor INT UNSIGNED;
 
     -- Get the base armor from character stats (if available)
     SELECT armor INTO armor
