@@ -132,9 +132,9 @@ RETURNS INT
 READS SQL DATA
 BEGIN
     -- Variables to store intermediate results
-    DECLARE armor INT DEFAULT 0;
-    DECLARE equipped_armor INT DEFAULT 0;
-    DECLARE total_armor INT DEFAULT 0;
+    DECLARE armor INT;
+    DECLARE equipped_armor INT;
+    DECLARE total_armor INT;
 
     -- Get the base armor from character stats (if available)
     SELECT armor INTO armor
