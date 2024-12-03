@@ -137,12 +137,12 @@ BEGIN
     DECLARE total_armor INT DEFAULT 0;
 
     -- Get the base armor from character stats (if available)
-    SELECT COALESCE(armor, 0) INTO armor
+    SELECT armor INTO armor
     FROM character_stats
     WHERE character_id = character_id;
 
     -- Sum the armor values of equipped items (if any)
-    SELECT COALESCE(SUM(i.armor), 0) INTO equipped_armor
+    SELECT SUM(i.armor) INTO equipped_armor
     FROM equipped e
     JOIN items i ON e.item_id = i.item_id
     WHERE e.character_id = character_id;
