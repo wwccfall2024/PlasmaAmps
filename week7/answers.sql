@@ -154,46 +154,46 @@ BEGIN
 END $$
 
 CREATE PROCEDURE attack(
-    IN id_of_character_being_attacked INT,
-    IN id_of_equipped_item_used_for_attack INT
+    IN target_character_id INT,
+    IN equipped_item_id INT
 )
 BEGIN
-    DECLARE damage INT;
-    DECLARE armor INT;
-    DECLARE health INT;
-    
+    DECLARE equipped_item_damage INT;
+    DECLARE target_character_armor INT;
+    DECLARE target_character_health INT;
+
     -- Get the damage of the equipped item
-    SELECT damage INTO damage
+    SELECT damage INTO equipped_item_damage
     FROM items
-    WHERE item_id = id_of_equipped_item_used_for_attack;
-    
+    WHERE item_id = equipped_item_id;
+
     -- Get the total armor of the attacked character
-    SET armor = armor_total(id_of_character_being_attacked);
-    
+    SET target_character_armor = armor_total(target_character_id);
+
     -- Get the current health of the attacked character
-    SELECT health INTO health
+    SELECT health INTO target_character_health
     FROM character_stats
-    WHERE character_id = id_of_character_being_attacked;
+    WHERE character_id = target_character_id;
 
     -- Calculate the net damage after subtracting armor
-    SET damage = GREATEST(0, damage - armor);  -- Prevent negative damage
+    SET equipped_item_damage = GREATEST(0, equipped_item_damage - target_character_armor); -- Prevent negative damage
 
     -- If damage is positive, apply the damage to the character's health
-    IF damage > 0 THEN
-        SET health = health - damage;
-        
+    IF equipped_item_damage > 0 THEN
+        SET target_character_health = target_character_health - equipped_item_damage;
+
         -- Update health in the character stats table
         UPDATE character_stats
-        SET health = health
-        WHERE character_id = id_of_character_being_attacked;
+        SET health = target_character_health
+        WHERE character_id = target_character_id;
 
         -- If the character's health reaches 0 or below, they die
-        IF health <= 0 THEN
+        IF target_character_health <= 0 THEN
             -- Delete the character and all related records
-            DELETE FROM character_stats WHERE character_id = id_of_character_being_attacked;
-            DELETE FROM equipped WHERE character_id = id_of_character_being_attacked;
-            DELETE FROM inventory WHERE character_id = id_of_character_being_attacked;
-            DELETE FROM team_members WHERE character_id = id_of_character_being_attacked;
+            DELETE FROM character_stats WHERE character_id = target_character_id;
+            DELETE FROM equipped WHERE character_id = target_character_id;
+            DELETE FROM inventory WHERE character_id = target_character_id;
+            DELETE FROM team_members WHERE character_id = target_character_id;
         END IF;
     END IF;
 END $$
