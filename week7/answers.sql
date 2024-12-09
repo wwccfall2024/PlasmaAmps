@@ -185,7 +185,7 @@ BEGIN
 
     -- If damage is positive, apply the damage to the character's health
     IF equipped_item_damage > 0 THEN
-        SET target_character_health = target_character_health - equipped_item_damage;
+        SET target_character_health = GREATEST(0, target_character_health - equipped_item_damage);
 
         -- Update health in the character stats table
         UPDATE character_stats
@@ -193,7 +193,7 @@ BEGIN
         WHERE character_id = target_character_id;
 
         -- If the character's health reaches 0 or below, they die
-        IF target_character_health <= 0 THEN
+        IF target_character_health = 0 THEN
             -- Delete the character and all related records
             DELETE FROM character_stats WHERE character_id = target_character_id;
             DELETE FROM equipped WHERE character_id = target_character_id;
