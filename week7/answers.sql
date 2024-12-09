@@ -158,14 +158,19 @@ CREATE PROCEDURE attack(
     IN equipped_item_id INT
 )
 BEGIN
+    DECLARE actual_item_id INT;
     DECLARE equipped_item_damage INT;
     DECLARE target_character_armor INT;
     DECLARE target_character_health INT;
 
+    SELECT item_id INTO actual_item_id
+    FROM equipped
+    WHERE equipped_id = equipped_item_id;
+
     -- Get the damage of the equipped item
     SELECT damage INTO equipped_item_damage
     FROM items
-    WHERE item_id = equipped_item_id;
+    WHERE item_id = actual_item_id;
 
     -- Get the total armor of the attacked character
     SET target_character_armor = armor_total(target_character_id);
