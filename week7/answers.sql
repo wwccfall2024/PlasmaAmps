@@ -199,6 +199,8 @@ BEGIN
             DELETE FROM equipped WHERE character_id = target_character_id;
             DELETE FROM inventory WHERE character_id = target_character_id;
             DELETE FROM team_members WHERE character_id = target_character_id;
+            DELETE FROM winners WHERE character_id = target_character_id; 
+            DELETE FROM characters WHERE character_id = target_character_id; 
         END IF;
     END IF;
 END $$
