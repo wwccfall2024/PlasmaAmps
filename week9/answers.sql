@@ -25,10 +25,10 @@ CREATE TABLE friends (
   user_id INT UNSIGNED,
   friend_id INT UNSIGNED,
   FOREIGN KEY (user_id) REFERENCES users(user_id)
-    ON DELETE SET NULL  --might need to change if causes problems/likely issue maker
+    ON DELETE SET NULL  
     ON UPDATE CASCADE,
   FOREIGN KEY (friend_id) REFERENCES users(user_id)
-    ON DELETE SET NULL  --might need to change if causes problems/likely issue maker
+    ON DELETE SET NULL  
     ON UPDATE CASCADE
 );
 
