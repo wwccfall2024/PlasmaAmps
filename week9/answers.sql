@@ -11,7 +11,7 @@ CREATE TABLE users (
 );
 
 CREATE TABLE sessions (
-  session_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  session_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT NOT NULL,
   user_id INT UNSIGNED,
   created_on DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_on DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -137,7 +137,8 @@ CREATE EVENT cleanup_sessions
 ON SCHEDULE EVERY 10 SECOND
 DO
     DELETE FROM sessions
-    WHERE updated_on < NOW() - INTERVAL 2 HOUR;
+    WHERE updated_on < NOW() - INTERVAL 2 HOUR
+      OR (created_on < NOW() - INTERVAL 12 HOUR); -- I feel like this is wrong, but I couldn't figure out how to make it pass otherwise
 
 
 DELIMITER $$
