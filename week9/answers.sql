@@ -74,8 +74,8 @@ SELECT
     p.content
 FROM 
     notifications n
-LEFT INNER JOIN posts p ON n.post_id = p.post_id
-LEFT INNER JOIN users u ON p.user_id = u.user_id;
+INNER JOIN posts p ON n.post_id = p.post_id
+INNER JOIN users u ON p.user_id = u.user_id;
 
 
 
@@ -85,15 +85,20 @@ LEFT INNER JOIN users u ON p.user_id = u.user_id;
 
 
 
+DELIMITER $$
+
 CREATE TRIGGER after_user_insert
 AFTER INSERT ON users
 FOR EACH ROW
 BEGIN
+    -- Add notifications for all other users about the new user
     INSERT INTO notifications (user_id, post_id)
-    SELECT user_id, NULL 
-    FROM users
-    WHERE user_id != NEW.user_id;
-END;
+    SELECT u.user_id, NULL
+    FROM users u
+    WHERE u.user_id != NEW.user_id;
+END$$
+
+DELIMITER ;
 
 
 
