@@ -91,11 +91,42 @@ CREATE TRIGGER after_user_insert
 AFTER INSERT ON users
 FOR EACH ROW
 BEGIN
-    -- Add notifications for all other users about the new user
-    INSERT INTO notifications (user_id, post_id)
-    SELECT u.user_id, NULL
-    FROM users u
-    WHERE u.user_id != NEW.user_id;
+    DECLARE done INT DEFAULT 0;
+    DECLARE cur_user_id INT;
+
+    -- Declare a cursor for selecting all user_ids except the new user
+    DECLARE user_cursor CURSOR FOR 
+    SELECT user_id 
+    FROM users 
+    WHERE user_id != NEW.user_id;
+
+    -- Declare a handler for the end of the cursor
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+    -- Create a new post for the new user
+    INSERT INTO posts (user_id, content, created_on, updated_on)
+    VALUES (NEW.user_id, CONCAT(NEW.first_name, ' ', NEW.last_name, ' just joined!'), NOW(), NOW());
+
+    -- Get the newly created post_id
+    SET @new_post_id = LAST_INSERT_ID();
+
+    -- Open the cursor
+    OPEN user_cursor;
+
+    -- Fetch the first user_id into the cursor variable
+    FETCH user_cursor INTO cur_user_id;
+
+    -- Loop through each user_id
+    WHILE done = 0 DO
+        -- Insert a notification for the current user
+        INSERT INTO notifications (user_id, post_id) VALUES (cur_user_id, @new_post_id);
+
+        -- Fetch the next user_id
+        FETCH user_cursor INTO cur_user_id;
+    END WHILE;
+
+    -- Close the cursor
+    CLOSE user_cursor;
 END$$
 
 DELIMITER ;
